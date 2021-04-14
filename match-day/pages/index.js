@@ -1,6 +1,7 @@
 import Head from "next/head";
 import React, { useState, useEffect } from "react";
 import Map from "../components/Map";
+import Location from "../components/Location";
 import { apiKey } from "./../App.config";
 
 export default function Home() {
@@ -25,18 +26,7 @@ export default function Home() {
 			<p>{teams}</p>
 			<br />
 
-			<form>
-				Chuck your address here
-				<br />
-				<input></input>
-				<button
-					onClick={e => {
-						e.preventDefault();
-					}}
-				>
-					Submit
-				</button>
-			</form>
+			<Location></Location>
 			<Map></Map>
 			<button title="increment" onClick={() => setCount(count + 1)}>
 				{count}
