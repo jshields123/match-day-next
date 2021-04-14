@@ -1,6 +1,8 @@
 import Head from 'next/head'
 import React, { useState, useEffect } from 'react';
+import Map from '../components/Map';
 import { apiKey } from './../App.config'
+
 
 export default function Home() {
     
@@ -27,6 +29,9 @@ export default function Home() {
       <p>{teams}</p>
       <br />
       <br />
+      <Map>
+        
+      </Map>
       <button title="increment" onClick={() => setCount(count + 1)}>
         {count}
       </button>
