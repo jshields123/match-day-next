@@ -1,6 +1,6 @@
 import React from "react";
 
-export default location = () => {
+const Location = () => {
 	return (
 		<div>
 			<form>
@@ -8,6 +8,7 @@ export default location = () => {
 				<br />
 				<input></input>
 				<button
+					title='locationSubmit'
 					onClick={e => {
 						e.preventDefault();
 					}}
@@ -18,3 +19,5 @@ export default location = () => {
 		</div>
 	);
 };
+
+export default Location

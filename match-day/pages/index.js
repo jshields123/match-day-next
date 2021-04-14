@@ -2,7 +2,7 @@ import Head from "next/head";
 import React, { useState, useEffect } from "react";
 import Map from "../components/Map";
 import Location from "../components/Location";
-import { apiKey } from "./../App.config";
+import { apiKey } from "./../app.config";
 
 export default function Home() {
 	function fetchData() {
