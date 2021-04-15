@@ -29,7 +29,6 @@ export default function Home() {
 
 			<Location></Location>
 			<Map></Map>
-			<SecondMap />
 
 			<button title="increment" onClick={() => setCount(count + 1)}>
 				{count}

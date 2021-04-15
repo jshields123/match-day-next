@@ -1,5 +1,5 @@
 import React from 'react'
-import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
+import { GoogleMap, LoadScript, useJsApiLoader } from '@react-google-maps/api';
 import { googleApi } from '../app.config';
 
 const containerStyle = {
@@ -22,14 +22,19 @@ const containerStyle = {
     })
   
     const [map, setMap] = React.useState(null)
+
+    React.useEffect(() => {
+      setLat(5)
+      setLng(10)
+    })
   
     const onLoad = React.useCallback(function callback(map) {
       const bounds = new window.google.maps.LatLngBounds();
       map.fitBounds(bounds);
+
       setMap(map)
 
-      setLat(5)
-      setLng(10)
+
     }, [])
   
     const onUnmount = React.useCallback(function callback(map) {
@@ -47,6 +52,6 @@ const containerStyle = {
           { /* Child components, such as markers, info windows, etc. */ }
           <></>
         </GoogleMap>
-    ) : <></>
+    ) : <><p>hello</p></>
   }
   export default React.memo(Map)
