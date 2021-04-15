@@ -8,11 +8,14 @@ const containerStyle = {
   };
   
   const center = {
-    lat: -3.745,
-    lng: -38.523
+    lat: 10,
+    lng: 10
   };
   
   function Map() {
+    const [lat, setLat] = React.useState(0)
+    const [lng, setLng] = React.useState(0)
+    
     const { isLoaded } = useJsApiLoader({
       id: 'google-map-script',
       googleMapsApiKey: `${googleApi}`
@@ -24,6 +27,9 @@ const containerStyle = {
       const bounds = new window.google.maps.LatLngBounds();
       map.fitBounds(bounds);
       setMap(map)
+
+      setLat(5)
+      setLng(10)
     }, [])
   
     const onUnmount = React.useCallback(function callback(map) {
