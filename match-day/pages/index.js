@@ -1,9 +1,9 @@
 import Head from "next/head";
 import React, { useState, useEffect } from "react";
-import Map from "../components/Map";
+import Mappy from "../components/thirdMap";
 import Location from "../components/Location";
 import { apiKey } from "./../app.config";
-import SecondMap from "../components/SecondMap";
+// import SecondMap from "../components/thirdMap";
 
 export default function Home() {
 	function fetchData() {
@@ -28,7 +28,7 @@ export default function Home() {
 			<br />
 
 			<Location></Location>
-			<Map />
+			<Mappy />
 
 			<button title="increment" onClick={() => setCount(count + 1)}>
 				{count}
