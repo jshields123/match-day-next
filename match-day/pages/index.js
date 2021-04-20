@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import Map from "../components/Map";
 import Location from "../components/Location";
 import { apiKey } from "./../app.config";
-import SecondMap from "../components/SecondMap";
+
 
 export default function Home() {
 	function fetchData() {
