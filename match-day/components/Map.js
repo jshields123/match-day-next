@@ -1,135 +1,135 @@
-// import { GoogleMap, LoadScript, useJsApiLoader } from '@react-google-maps/api';
-// import { googleApi } from '../app.config';
+import React from 'react'
+import {
+  GoogleMap,
+  useLoadScript,
+  Marker,
+  InfoWindow,
+} from '@react-google-maps/api'
+import { formatRelative } from 'date-fns'
+import { googleApi } from '../app.config.js'
+import mapStyles from './snazzyMaps'
+import UsePlacesAutocomplete, {
+  getGeocode,
+  getLatLng,
+} from 'use-places-autocomplete'
+import {
+  Combobox,
+  ComboboxInput,
+  ComboboxPopover,
+  ComboboxList,
+  ComboboxOption,
+} from '@reach/combobox'
+import usePlacesAutocomplete from 'use-places-autocomplete'
 
+const libraries = ['places']
+const mapContainerStyle = {
+  width: '60vw',
+  height: '60vw',
+}
+const center = {
+  lat: 51.5074,
+  lng: 0.1278
+}
+const options = {
+  styles: mapStyles,
+  disableDefaultUI: true,
+  zoomControl: true,
+}
 
-import React, { useRef, useEffect, useState } from "react";
-import ReactDOM from "react-dom";
-import mapboxgl from "mapbox-gl/dist/mapbox-gl-csp";
-import MapboxWorker from "worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker";
-import { mapAPI } from "../app.config";
+export default function Mappy() {
+  const {isLoaded, loadError} = useLoadScript({
+    googleMapsApiKey: googleApi,
+    libraries,
+  })
 
-mapboxgl.workerClass = MapboxWorker;
-mapboxgl.accessToken = `${mapAPI}`;
+  const mapRef = React.useRef()
+  const onMapLoad = React.useCallback(map => {
+    mapRef.current = map
+  }, [])
 
-const Map = () => {
-	const mapContainer = useRef();
-	const [lng, setLng] = useState(-2.2446022);
-	const [lat, setLat] = useState(51.3498525);
-	const [zoom, setZoom] = useState(9);
+  const panTo = React.useCallback(({lat,lng}) => {
+    mapRef.current.panTo({ lat, lng });
+    mapRef.current.setZoom(14);
+  }, [])
 
-	useEffect(() => {
-		const map = new mapboxgl.Map({
-			container: mapContainer.current,
-			style: "mapbox://styles/mapbox/streets-v11",
-			center: [lng, lat],
-			zoom: zoom,
-		});
-		map.on("move", () => {
-			setLng(map.getCenter().lng.toFixed(4));
-			setLat(map.getCenter().lat.toFixed(4));
-			setZoom(map.getZoom().toFixed(2));
-		});
-		return () => map.remove();
-	}, []);
+  if (loadError) return 'Error loading'
+  if (!isLoaded) return 'Loading Maps'
+ 
+  return (
+    <div>
+      <h1> Games <span role='img' aria-label='football'>⚽️</span></h1>
+      <Search panTo={panTo}/>
+      <Locate panTo={panTo} />
+      <GoogleMap 
+        mapContainerStyle={mapContainerStyle}
+        zoom={12}
+        center={center}
+        options={options}
+        onLoad={onMapLoad}
+      ></GoogleMap>
+    </div>
+  )
+}
 
-	return (
-		<div>
-			<div className="sidebar">
-				Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
-			</div>
-			<div className="map-container" ref={mapContainer} />
-		</div>
-	);
-};
+function Locate({panTo}) {
+  return (
+    <button onClick={()=>{
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          panTo({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          })
+      }, 
+      () => null)
+    }}>
+      Use Location
+    </button>
+  )
+}
 
-export default Map;
-// ReactDOM.render(<Map />, document.getElementById("app"));
+function Search({panTo}){
+  const {
+    ready, 
+    value, 
+    suggestions: {status, data}, 
+    setValue, 
+    clearSuggestions,} = usePlacesAutocomplete({
+    requestOptions: {
+      location: { lat: () => 51.5074, lng: () => 0.12789 },
+      radius: 50 * 1000,
+    },
+  })
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// const containerStyle = {
-//     width: '400px',
-//     height: '400px'
-//   };
-  
-//   const center = {
-//     lat: 10,
-//     lng: 10
-//   };
-  
-//   function Map() {
-//     const [lat, setLat] = React.useState(0)
-//     const [lng, setLng] = React.useState(0)
-    
-//     const { isLoaded } = useJsApiLoader({
-//       id: 'google-map-script',
-//       googleMapsApiKey: `${googleApi}`
-//     })
-  
-//     const [map, setMap] = React.useState(null)
-
-//     React.useEffect(() => {
-//       setLat(5)
-//       setLng(10)
-//     })
-  
-//     const onLoad = React.useCallback(function callback(map) {
-//       const bounds = new window.google.maps.LatLngBounds();
-//       map.fitBounds(bounds);
-
-//       setMap(map)
-
-
-//     }, [])
-  
-//     const onUnmount = React.useCallback(function callback(map) {
-//       setMap(null)
-//     }, [])
-  
-//     return isLoaded ? (
-//         <GoogleMap
-//           mapContainerStyle={containerStyle}
-//           center={center}
-//           zoom={10}
-//           onLoad={onLoad}
-//           onUnmount={onUnmount}
-//         >
-//           { /* Child components, such as markers, info windows, etc. */ }
-//           <></>
-//         </GoogleMap>
-//     ) : <><p>hello</p></>
-//   }
-//   export default React.memo(Map)
+  return (
+    <Combobox 
+      onSelect={ async address => {
+        setValue(address, false)
+        clearSuggestions()
+        try {
+          const results = await getGeocode({ address });
+          const { lat, lng } = await getLatLng(results[0]);
+          panTo({ lat, lng });
+        } catch (error) {
+          console.log(error)
+        }
+      }}
+    >
+      <ComboboxInput 
+        value={value} 
+        onChange={(e) => {
+          setValue(e.target.value)
+        }} 
+        disabled={!ready}
+        placeholder='Enter an address'
+      />
+      <ComboboxPopover>
+        <ComboboxList>
+          {status === 'OK' && data.map(({id, description}) => (
+            <ComboboxOption key={id} value={description} />
+          ))}
+        </ComboboxList>
+      </ComboboxPopover>
+    </Combobox>
+  )
+}
