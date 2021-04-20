@@ -88,7 +88,7 @@ function Locate({panTo}) {
   )
 }
 
-function Search(panTo){
+function Search({panTo}){
   const {
     ready, 
     value, 
